@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const donorRoutes = require('./routes/donor');
+const adminRoutes = require('./routes/admin');
+const productRoutes = require('./routes/product');
+const authRoutes = require('./routes/auth');
+const profileRoutes = require('./routes/profile');
+const associationRoutes = require('./routes/association');
 
-export default App;
+const app = express();
+
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(cors());
+
+app.use('/api/donor', donorRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/product', productRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/association', associationRoutes);
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+module.exports = app;
