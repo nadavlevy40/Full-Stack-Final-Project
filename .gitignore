@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+
+# Compiled output
+dist/
+build/
+*.log
+
+# Environment variables
+.env
+
+# IDE/editor specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.idea/
+*.iml
+*.ipr
+*.iws
+*.bak
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
