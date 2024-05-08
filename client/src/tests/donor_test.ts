@@ -1,3 +1,4 @@
+// donor_test.ts
 import request from "supertest";
 import initApp from "../app";
 import mongoose from "mongoose";
@@ -35,7 +36,7 @@ const newDonor: IDonor = {
 };
 
 beforeAll(async () => {
-  app = await initApp();
+  //app = await initApp();
   await Donor.deleteMany();
 
   await request(app).post("/auth/register").send(donor);
@@ -54,6 +55,7 @@ describe("Donor tests", () => {
       .set("Authorization", "Bearer " + accessToken)
       .send(donor);
     expect(response.statusCode).toBe(201);
+    return response.body._id; // Return the generated _id
   };
 
   test("Test Get All Donors with one donor in DB", async () => {
@@ -71,7 +73,8 @@ describe("Donor tests", () => {
   });
 
   test("Test Post Donor", async () => {
-    addDonor(newDonor);
+    const createdDonorId = await addDonor(newDonor);
+    expect(createdDonorId).toBeDefined(); // Check if the _id is defined
   });
 
   test("Test Post duplicate Donor", async () => {
@@ -83,8 +86,9 @@ describe("Donor tests", () => {
   });
 
   test("Test get donor by id", async () => {
+    const createdDonorId = await addDonor(newDonor);
     const response = await request(app)
-      .get("/donor/" + newDonor._id)
+      .get("/donor/" + createdDonorId)
       .set("Authorization", "Bearer " + accessToken);
     expect(response.statusCode).toBe(200);
     expect(response.body.firstName).toBe(newDonor.firstName);
@@ -95,9 +99,10 @@ describe("Donor tests", () => {
   });
 
   test("Test PUT /donor/:id", async () => {
+    const createdDonorId = await addDonor(newDonor);
     const updatedDonor = { ...newDonor, firstName: "Updated" };
     const response = await request(app)
-      .put("/donor/" + newDonor._id)
+      .put("/donor/" + createdDonorId)
       .set("Authorization", "Bearer " + accessToken)
       .send(updatedDonor);
     expect(response.statusCode).toBe(200);
@@ -105,15 +110,9 @@ describe("Donor tests", () => {
   });
 
   test("Test DELETE /donor/:id", async () => {
+    const createdDonorId = await addDonor(newDonor);
     const response = await request(app)
-      .delete(`/donor/${donor._id}`)
-      .set("Authorization", "Bearer " + accessToken);
-    expect(response.statusCode).toBe(200);
-  });
-
-  test("Test DELETE /donor/:id", async () => {
-    const response = await request(app)
-      .delete(`/donor/${newDonor._id}`)
+      .delete(`/donor/${createdDonorId}`)
       .set("Authorization", "Bearer " + accessToken);
     expect(response.statusCode).toBe(200);
   });
